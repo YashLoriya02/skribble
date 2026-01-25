@@ -1,7 +1,17 @@
 import {socket} from "./socket";
 import {useGameStore} from "../store/useGameStore.ts";
+import {SFX} from "../audio/sound.ts";
 
 let bound = false;
+let prevPlayerIds = new Set<string>();
+let suppressRoundEndUntil = 0;
+
+const suppress = (ms: number) => {
+    const until = Date.now() + ms;
+    suppressRoundEndUntil = Math.max(suppressRoundEndUntil, until);
+};
+
+const canPlayRoundEnd = () => Date.now() > suppressRoundEndUntil;
 
 export function bindSocketOnce() {
     if (bound) return;
@@ -27,6 +37,17 @@ export function bindSocketOnce() {
     });
 
     socket.on("room:state", (state) => {
+        const ids = new Set(state.players.map((p: any) => p.playerId));
+        if (prevPlayerIds.size > 0) {
+            let added = 0;
+            ids.forEach((id) => {
+                if (!prevPlayerIds.has(id)) added++;
+            });
+            if (added > 0) SFX.play("join");
+        }
+
+        prevPlayerIds = ids;
+
         store.getState().setPublicState(state);
 
         const st = useGameStore.getState();
@@ -51,6 +72,7 @@ export function bindSocketOnce() {
 
     socket.on("round:start", () => {
         store.getState().clearStrokes();
+        SFX.play("start");
     });
 
     socket.on("round:mask", ({mask}) => {
@@ -60,6 +82,7 @@ export function bindSocketOnce() {
 
     socket.on("round:end", ({word}) => {
         store.setState({lastRoundEnd: {word, ts: Date.now()}} as any);
+        if (canPlayRoundEnd()) SFX.play("roundEnd");
     });
 
     socket.on("draw:stroke", (stroke) => {
@@ -72,9 +95,11 @@ export function bindSocketOnce() {
 
     socket.on("chat:message", (msg) => {
         store.getState().addChat(msg);
+
+        SFX.play("chat");
     });
 
-    socket.on("guess:correct", ({name}) => {
+    socket.on("guess:correct", ({ name, playerId: who }) => {
         const store = useGameStore.getState();
 
         store.addChat({
@@ -85,7 +110,11 @@ export function bindSocketOnce() {
             ts: Date.now(),
             type: "correct",
         } as any);
+
+        suppress(1500);
+        if (who === store.playerId) SFX.play("correct");
     });
+
 
     socket.on("round:word", ({word}) => {
         useGameStore.getState().setDrawerWord(word);
@@ -96,6 +125,7 @@ export function bindSocketOnce() {
 
         if (!word) return;
 
+        if (canPlayRoundEnd()) SFX.play("roundEnd");
         store.addChat({
             roomCode: store.roomCode,
             playerId: "__system__",
@@ -110,5 +140,6 @@ export function bindSocketOnce() {
 
     socket.on("game:ended", ({leaderboard}) => {
         store.getState().setLeaderboard(leaderboard);
+        SFX.play("gameEnd");
     });
 }

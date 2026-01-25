@@ -2,7 +2,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useGameStore} from "../../store/useGameStore.ts";
 import type {Point, Stroke} from "../../types/socket.ts";
 import {socket} from "../../socket/socket.ts";
-import {Undo} from "lucide-react";
+// import {Undo} from "lucide-react";
 import WordSelectSheet from "./WordSelectSheet.tsx";
 
 function makeStrokeId() {
@@ -193,13 +193,13 @@ export default function CanvasBoard() {
                                 value={width}
                                 onChange={(e) => setWidth(Number(e.target.value))}
                             />
-                            <button
-                                className="px-3 py-1.5 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
-                                onClick={() => roomCode && playerId && socket.emit("draw:undo", {roomCode, playerId})}
-                                disabled={phase !== "drawing"}
-                            >
-                                <Undo/>
-                            </button>
+                            {/*<button*/}
+                            {/*    className="px-3 py-1.5 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"*/}
+                            {/*    onClick={() => roomCode && playerId && socket.emit("draw:undo", {roomCode, playerId})}*/}
+                            {/*    disabled={phase !== "drawing"}*/}
+                            {/*>*/}
+                            {/*    <Undo/>*/}
+                            {/*</button>*/}
                             <button
                                 className="px-3 py-1.5 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
                                 onClick={() => roomCode && playerId && socket.emit("draw:clear", {roomCode, playerId})}

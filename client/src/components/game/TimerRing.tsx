@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useGameStore } from "../../store/useGameStore";
+import {SFX} from "../../audio/sound.ts";
 
 type Props = {
     size?: number;
@@ -25,6 +26,7 @@ export default function TimerRing({ size = 54, stroke = 6 }: Props) {
         return null;
     }, [publicState, phase]);
 
+    const [lastTickSec, setLastTickSec] = useState<number | null>(null);
     const [now, setNow] = useState(Date.now());
 
     useEffect(() => {
@@ -51,6 +53,21 @@ export default function TimerRing({ size = 54, stroke = 6 }: Props) {
     const dash = c * pct;
 
     const urgent = secLeft <= 10 && phase === "drawing";
+
+    useEffect(() => {
+        if (!endsAt) return;
+        if (phase !== "drawing") return;
+
+        if (secLeft <= 10 && secLeft >= 1) {
+            if (lastTickSec !== secLeft) {
+                setLastTickSec(secLeft);
+                SFX.play("tick");
+            }
+        } else {
+            if (lastTickSec !== null) setLastTickSec(null);
+        }
+    }, [secLeft, endsAt, phase, lastTickSec]);
+
 
     return (
         <div className="flex items-center gap-2">

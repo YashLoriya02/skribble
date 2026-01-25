@@ -113,10 +113,10 @@ export default function Lobby() {
                     <div className="flex gap-3">
                         {
                             isHost ?
-                                <Button onClick={startGame} disabled={!roomCode}>
+                                <Button className={"border border-white/10 px-8"} onClick={startGame} disabled={!roomCode}>
                                     Start Game
                                 </Button>
-                                : <Button onClick={toggleReady} disabled={!roomCode}>
+                                : <Button className={"border border-white/10 px-8"} onClick={toggleReady} disabled={!roomCode}>
                                     {me?.isReady ? "Unready" : "Ready"}
                                 </Button>
                         }

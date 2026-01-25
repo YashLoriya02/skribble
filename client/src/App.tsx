@@ -12,7 +12,7 @@ export default function App() {
     }, []);
 
     return (
-        <div className="min-h-screen no-scrollbar bg-[#181c22] text-zinc-100">
+        <div className="min-h-screen no-scrollbar overflow-hidden bg-[#181c22] text-zinc-100">
             <Toaster richColors closeButton position={"bottom-right"} />
             <Routes>
                 <Route path="/" element={<Home />} />

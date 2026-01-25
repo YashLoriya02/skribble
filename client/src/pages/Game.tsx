@@ -7,6 +7,7 @@ import ChatPanel from "../components/game/ChatPanel";
 import GameHeader from "../components/game/GameHeader";
 import {toast} from "sonner";
 import {Copy} from "lucide-react";
+import {SoundToggle} from "../components/SoundToggle.tsx";
 
 export default function Game() {
     const nav = useNavigate();
@@ -60,6 +61,7 @@ export default function Game() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    <SoundToggle />
                     <button
                         className="px-3 py-2 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
                         onClick={leave}

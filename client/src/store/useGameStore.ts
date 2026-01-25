@@ -10,7 +10,7 @@ type GameStore = {
     publicState: PublicState | null;
     syncState: SyncState | null;
 
-    // derived realtime data
+    // derived realtime sfx
     strokes: Stroke[]; // current round strokes for rendering
     chat: ChatMessage[];
 
