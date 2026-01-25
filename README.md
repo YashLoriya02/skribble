@@ -1,6 +1,6 @@
 ## Skribble Game
 
-### This is the code for game which is similar to skribble, it is built using node.js (express.js) + vite (react.js) + typescript and websocket for RTC.
+### This is the code of game like skribbl, it is built using node.js (express.js) + vite (react.js) + typescript and websocket for RTC.
 
 ### Client
 - `cd client`
@@ -14,6 +14,7 @@
 
 
 ### Remaining
-- Sounds
-- Re-game Option 
+- Re-game Option
 - Canvas Optimization
+- Adding more words
+- Chat height fix in mobile (not necessary)
