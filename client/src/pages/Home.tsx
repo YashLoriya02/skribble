@@ -6,6 +6,7 @@ import {Input} from "../components/ui/input";
 import {Card, CardContent, CardHeader, CardTitle} from "../components/ui/card";
 import {socket} from "../socket/socket.ts";
 import {useGameStore} from "../store/useGameStore.ts";
+import {toast} from "sonner";
 
 export default function Home() {
     const nav = useNavigate();
@@ -40,26 +41,42 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6">
-            <Card className="w-full max-w-xl bg-zinc-900/60 border-zinc-800">
+        <div className="min-h-screen h-full flex items-center justify-center">
+            <Card className="w-[90%] md:w-full pt-6 max-w-2xl bg-zinc-900/60 border-zinc-800">
                 <CardHeader>
-                    <CardTitle className="text-white/80 text-xl">Skribble</CardTitle>
-                    <div className="text-sm text-zinc-400">Create or join a room to start drawing.</div>
+                    <CardTitle className="text-white/80 text-2xl">Skribble</CardTitle>
+                    <div className="text-sm text-zinc-400">Create or join a room to start the game.</div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 mb-6">
                     <div className="space-y-2">
-                        <div className="text-sm text-zinc-300">Your name</div>
+                        <div className="text-sm text-zinc-300">What will other's call you?</div>
                         <Input
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g. Yash"
+                            onChange={(e) => {
+                                if (e.target.value.length > 12) {
+                                    toast.error("Select the name with less than 12 characters")
+                                } else {
+                                    setName(e.target.value)
+                                }
+                            }}
+                            placeholder="Give some funny name"
+                            className="bg-zinc-950/40 text-white/90 border-zinc-800"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="text-sm text-zinc-300">Do you have any friend?</div>
+                        <Input
+                            value={joinCode}
+                            onChange={(e) => setJoinCode(e.target.value)}
+                            placeholder="Room code (for join)"
                             className="bg-zinc-950/40 text-white/90 border-zinc-800"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <Button className={"border border-white/50"} onClick={onCreate} disabled={!canProceed}>
+                        <Button className={"border border-white/10"} onClick={onCreate} disabled={!canProceed}>
                             Create room
                         </Button>
                         <Button variant="secondary" onClick={onJoin} disabled={!canProceed || !joinCode.trim()}>
@@ -67,22 +84,11 @@ export default function Home() {
                         </Button>
                     </div>
 
-                    <Input
-                        value={joinCode}
-                        onChange={(e) => setJoinCode(e.target.value)}
-                        placeholder="Room code (for join)"
-                        className="bg-zinc-950/40 text-white/90 border-zinc-800"
-                    />
-
                     {error && (
                         <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-2">
                             {error}
                         </div>
                     )}
-
-                    {/*<div className="text-xs text-zinc-500">*/}
-                    {/*    Tip: In production, you’ll show reconnect flow if user refreshes.*/}
-                    {/*</div>*/}
                 </CardContent>
             </Card>
         </div>

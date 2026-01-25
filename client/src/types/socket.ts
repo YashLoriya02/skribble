@@ -60,7 +60,9 @@ export type ChatMessage = {
     name: string;
     text: string;
     ts: number;
+    type?: "normal" | "correct" | "reveal";
 };
+
 
 export type GuessCorrect = {
     roomCode: string;
@@ -93,6 +95,7 @@ export type ServerToClientEvents = {
     "room:created": (payload: { roomCode: string; state: PublicState }) => void;
     "room:joined": (payload: { roomCode: string; state: PublicState }) => void;
     "room:state": (state: PublicState) => void;
+    "round:word": (payload: { roomCode: string; word: string }) => void;
 
     "sync:state": (sync: SyncState) => void;
 
@@ -140,4 +143,5 @@ export type ClientToServerEvents = {
 
     "sync:request": (payload: { roomCode: string; playerId: string }) => void;
     "chat:send": (payload: { roomCode: string; playerId: string; text: string }) => void;
+    "draw:undo": (payload: { roomCode: string; playerId: string }) => void
 };

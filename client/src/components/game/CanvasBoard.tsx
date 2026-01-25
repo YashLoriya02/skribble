@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {useGameStore} from "../../store/useGameStore.ts";
 import type {Point, Stroke} from "../../types/socket.ts";
 import {socket} from "../../socket/socket.ts";
+import {Undo} from "lucide-react";
+import WordSelectSheet from "./WordSelectSheet.tsx";
 
 function makeStrokeId() {
     return crypto.randomUUID?.() ?? `s_${Math.random().toString(16).slice(2)}_${Date.now()}`;
@@ -32,7 +34,7 @@ function drawStroke(ctx: CanvasRenderingContext2D, stroke: Stroke) {
 
 export default function CanvasBoard() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const { roomCode, playerId, publicState, strokes } = useGameStore();
+    const {roomCode, playerId, publicState, strokes} = useGameStore();
 
     const phase = publicState?.phase;
     const drawerId = publicState?.round.drawerId;
@@ -165,9 +167,9 @@ export default function CanvasBoard() {
 
     return (
         <div className="w-full">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
+            <div className="rounded-xl h-[250px] md:h-full border border-zinc-800 bg-zinc-950/40 p-3">
                 <div className="flex items-center justify-between gap-3 mb-3">
-                    <div className="text-sm text-zinc-300">
+                    <div className="hidden md:block text-sm text-zinc-300">
                         {phase !== "drawing"
                             ? "Waiting for round…"
                             : isDrawer
@@ -193,7 +195,14 @@ export default function CanvasBoard() {
                             />
                             <button
                                 className="px-3 py-1.5 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
-                                onClick={() => roomCode && playerId && socket.emit("draw:clear", { roomCode, playerId })}
+                                onClick={() => roomCode && playerId && socket.emit("draw:undo", {roomCode, playerId})}
+                                disabled={phase !== "drawing"}
+                            >
+                                <Undo/>
+                            </button>
+                            <button
+                                className="px-3 py-1.5 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
+                                onClick={() => roomCode && playerId && socket.emit("draw:clear", {roomCode, playerId})}
                                 disabled={phase !== "drawing"}
                             >
                                 Clear
@@ -202,14 +211,17 @@ export default function CanvasBoard() {
                     ) : null}
                 </div>
 
-                <div className="aspect-[16/9] w-full">
+                <div className="w-full">
                     <canvas
                         ref={canvasRef}
+                        height={250}
                         className={`h-full w-full rounded-lg ${
                             canDraw ? "cursor-crosshair" : "cursor-not-allowed opacity-95"
                         }`}
                     />
                 </div>
+
+                <WordSelectSheet />
             </div>
         </div>
     );

@@ -76,6 +76,7 @@ export type ServerToClientEvents = {
   "round:start": (data: { roomCode: string; drawerId: string; mask: string; endsAt: number }) => void;
   "round:mask": (data: { roomCode: string; mask: string }) => void;
   "round:end": (data: { roomCode: string; word: string }) => void;
+  "round:word": ({roomCode, word}: { roomCode: string; word: string }) => void
 
   "draw:stroke": (data: {
     roomCode: string;
@@ -135,4 +136,5 @@ export type ClientToServerEvents = {
 
   "reconnect:hello": (payload: ReconnectHelloPayload) => void;
   "chat:send": (payload: ChatSendPayload) => void;
+  "draw:undo": (payload: LeaveRoomPayload) => void;
 };

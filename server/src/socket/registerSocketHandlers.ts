@@ -188,6 +188,16 @@ export function registerSocketHandlers(io: Server<ClientToServerEvents, ServerTo
       }
     });
 
+    socket.on("draw:undo", ({ roomCode, playerId }) => {
+      try {
+        const normalized = roomCode?.trim()?.toUpperCase();
+        if (!normalized || !playerId?.trim()) throw new Error("Invalid payload");
+        RoomService.undoLastStroke({ roomCode: normalized, playerId: playerId.trim() });
+      } catch (e: any) {
+        socket.emit("room:error", e?.message || "Failed to undo");
+      }
+    });
+
     socket.on("disconnect", () => {
       RoomService.markDisconnectedBySocket(socket.id);
     });

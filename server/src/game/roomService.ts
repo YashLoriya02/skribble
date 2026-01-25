@@ -284,7 +284,7 @@ export const RoomService = {
 
     if (room.players.length < 2) throw new Error("Need at least 2 players to start");
     const allReady = room.players.every((p) => p.isReady || p.isHost);
-    if (!allReady) throw new Error("All players must be ready (host can be not-ready)");
+    if (!allReady) throw new Error("All players must be ready");
 
     room.currentRound = 1;
     reshuffleDrawerOrder(room);
@@ -407,6 +407,14 @@ export const RoomService = {
         RoomService.endRound({ roomCode: latest.roomCode, reason: "time" });
       } catch {}
     }, durMs);
+
+    const drawer = room.players.find((p) => p.playerId === room.round.drawerId);
+    if (drawer) {
+      GameGateway.io().to(drawer.socketId).emit("round:word", {
+        roomCode: room.roomCode,
+        word: room.round.word,
+      });
+    }
 
     return { room, publicState: toPublicState(room) };
   },
@@ -657,6 +665,25 @@ export const RoomService = {
 
     setRoom(room.roomCode, room);
     return { room, publicState: toPublicState(room) };
+  },
+
+  undoLastStroke(params: { roomCode: string; playerId: string }) {
+    const room = requireRoom(params.roomCode);
+    if (room.phase !== "drawing") throw new Error("Not in drawing phase");
+    requireDrawer(room, params.playerId);
+
+    if (room.round.strokes.length === 0) return false;
+
+    room.round.strokes.pop();
+    setRoom(room.roomCode, room);
+
+    // simplest: clear + replay everything
+    GameGateway.drawClear(room.roomCode);
+    for (const s of room.round.strokes) {
+      GameGateway.drawStroke(room.roomCode, { roomCode: room.roomCode, ...s });
+    }
+
+    return true;
   },
 
   markDisconnectedBySocket(socketId: string) {

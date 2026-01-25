@@ -11,3 +11,9 @@
 - `cd client`
 - `npm i`
 - `npm run dev`
+
+
+### Remaining
+- Sounds
+- Re-game Option 
+- Canvas Optimization

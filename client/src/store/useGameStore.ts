@@ -46,6 +46,13 @@ type GameStore = {
 
     setError: (msg: string | null) => void;
     resetRoom: () => void;
+
+    drawerWord: string | null;
+    lastRoundWord: string | null;
+
+    setDrawerWord: (w: string | null) => void;
+    setLastRoundWord: (w: string | null) => void;
+
 };
 
 const LS_PLAYER_ID = "skribble_player_id";
@@ -80,6 +87,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
         localStorage.setItem(LS_NAME, name);
         set({ name });
     },
+
+    drawerWord: null,
+    lastRoundWord: null,
+    setDrawerWord: (w) => set({ drawerWord: w }),
+    setLastRoundWord: (w) => set({ lastRoundWord: w }),
 
     ensurePlayerId: () => {
         const cur = get().playerId;
