@@ -69,7 +69,7 @@ export default function Lobby() {
 
                 <CardContent className="space-y-4">
                     <LobbySettings />
-                    <LobbyReadyPanel />
+                    <LobbyReadyPanel isGame={false} />
 
                     {error && (
                         <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-2">
