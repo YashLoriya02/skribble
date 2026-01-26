@@ -198,6 +198,25 @@ export function registerSocketHandlers(io: Server<ClientToServerEvents, ServerTo
       }
     });
 
+    socket.on("game:rematch", ({ roomCode, playerId, mode }) => {
+      try {
+        const normalized = roomCode?.trim()?.toUpperCase();
+        if (!normalized || !playerId?.trim()) throw new Error("Invalid payload");
+
+        const { publicState } = RoomService.rematch({
+          roomCode: normalized,
+          playerId: playerId.trim(),
+          mode: mode === "same_settings" ? "same_settings" : "fresh",
+        });
+
+        io.to(normalized).emit("room:state", publicState);
+        io.to(normalized).emit("game:rematchStarted", { roomCode: normalized });
+      } catch (e: any) {
+        socket.emit("room:error", e?.message || "Failed to rematch");
+      }
+    });
+
+
     socket.on("disconnect", () => {
       RoomService.markDisconnectedBySocket(socket.id);
     });

@@ -5,14 +5,14 @@ import {socket} from "../socket/socket";
 
 import {Button} from "../components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "../components/ui/card";
-import {Badge} from "../components/ui/badge";
 import {Copy} from "lucide-react";
 import {toast} from "sonner";
 import LobbySettings from "../components/lobby/LobbySettings.tsx";
+import LobbyReadyPanel from "../components/lobby/LobbyReady.tsx";
 
 export default function Lobby() {
     const nav = useNavigate();
-    const {roomCode, playerId, ensurePlayerId, publicState, error, setError, resetRoom} = useGameStore();
+    const {roomCode, playerId, ensurePlayerId, publicState, error, resetRoom} = useGameStore();
 
     useEffect(() => {
         if (publicState?.phase && publicState.phase !== "lobby") {
@@ -31,23 +31,6 @@ export default function Lobby() {
         }
     }, [roomCode, ensurePlayerId]);
 
-    const players: any[] = publicState?.players ?? [];
-    const me = players.find((p) => p.playerId === playerId);
-    const isHost = publicState?.hostPlayerId === playerId;
-
-    const toggleReady = () => {
-        setError(null);
-        if (!roomCode || !playerId) return;
-        socket.emit("lobby:ready", {roomCode, playerId, isReady: !me?.isReady});
-    };
-
-    const startGame = () => {
-        setError(null);
-        if (!roomCode || !playerId) return;
-        socket.emit("game:start", {roomCode, playerId});
-        // nav("/game");
-    };
-
     const leave = () => {
         if (roomCode && playerId) socket.emit("room:leave", {roomCode, playerId});
         resetRoom();
@@ -57,7 +40,6 @@ export default function Lobby() {
     const copyCode = async () => {
         try {
             await navigator.clipboard.writeText(roomCode);
-
             toast.success("Room Code Copied!");
         } catch (e) {
             console.log("Error in copying room code", e)
@@ -86,43 +68,8 @@ export default function Lobby() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                    <div className="grid gap-2">
-                        <div className="text-sm text-zinc-300">Players</div>
-                        <div className="space-y-2">
-                            {players.length === 0 ? (
-                                <div className="text-sm text-zinc-500">Waiting for players…</div>
-                            ) : (
-                                players.map((p) => (
-                                    <div
-                                        key={p.playerId}
-                                        className="flex items-center justify-between rounded-md border border-zinc-800 bg-zinc-950/40 px-3 py-2"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-zinc-100">{p.name}</span>
-                                            {p.playerId === playerId && <Badge variant="secondary">You</Badge>}
-                                            {p.isHost && <Badge>Host</Badge>}
-                                        </div>
-                                        <Badge
-                                            variant={p.isReady ? "default" : "secondary"}>{p.isReady ? "Ready" : "Not ready"}</Badge>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                        {
-                            isHost ?
-                                <Button className={"border border-white/10 px-8"} onClick={startGame} disabled={!roomCode}>
-                                    Start Game
-                                </Button>
-                                : <Button className={"border border-white/10 px-8"} onClick={toggleReady} disabled={!roomCode}>
-                                    {me?.isReady ? "Unready" : "Ready"}
-                                </Button>
-                        }
-                    </div>
-
                     <LobbySettings />
+                    <LobbyReadyPanel />
 
                     {error && (
                         <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-2">

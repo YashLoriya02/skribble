@@ -5,6 +5,7 @@ type SfxKey =
     | "gameEnd"
     | "correct"
     | "start"
+    | "drumroll"
     | "chat";
 
 const SOURCES: Record<SfxKey, string> = {
@@ -15,6 +16,7 @@ const SOURCES: Record<SfxKey, string> = {
     correct: "./sfx/correct.mp3",
     start: "./sfx/start.mp3",
     chat: "./sfx/chat.mp3",
+    drumroll: "./sfx/drumroll.mp3",
 };
 
 class SoundManager {

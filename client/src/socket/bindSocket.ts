@@ -57,6 +57,17 @@ export function bindSocketOnce() {
             st.setLastRoundWord(null);
         }
 
+        if (state.phase !== "game_end") {
+            st.setShowCelebration(false);
+            st.setLeaderboard(null);
+        }
+
+        if (state.phase === "lobby") {
+            st.setWordOptions?.(null);
+            st.setDrawerWord?.(null);
+            st.setLastRoundWord?.(null);
+        }
+
         if (state.phase === "drawing") {
             st.setLastRoundWord(null);
         }
@@ -115,6 +126,15 @@ export function bindSocketOnce() {
         if (who === store.playerId) SFX.play("correct");
     });
 
+    socket.on("game:rematchStarted", () => {
+        const st = useGameStore.getState();
+        st.clearStrokes?.();
+        st.clearChat?.();
+        st.setWordOptions?.(null);
+        st.setDrawerWord?.(null);
+        st.setLastRoundWord?.(null);
+        st.setLeaderboard?.(null);
+    });
 
     socket.on("round:word", ({word}) => {
         useGameStore.getState().setDrawerWord(word);
@@ -138,8 +158,9 @@ export function bindSocketOnce() {
         store.setLastRoundWord(word);
     });
 
-    socket.on("game:ended", ({leaderboard}) => {
-        store.getState().setLeaderboard(leaderboard);
-        SFX.play("gameEnd");
+    socket.on("game:ended", ({ leaderboard }) => {
+        const st = useGameStore.getState();
+        st.setLeaderboard(leaderboard);
+        st.setShowCelebration(true);
     });
 }

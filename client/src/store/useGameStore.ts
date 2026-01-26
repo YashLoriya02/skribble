@@ -23,6 +23,7 @@ type GameStore = {
     leaderboard: { playerId: string; name: string; score: number }[] | null;
 
     error: string | null;
+    showCelebration: boolean;
 
     setName: (name: string) => void;
     ensurePlayerId: () => string;
@@ -43,8 +44,10 @@ type GameStore = {
     clearChat: () => void;
 
     setLeaderboard: (lb: GameStore["leaderboard"]) => void;
+    clearLeaderboard: () => void;
 
     setError: (msg: string | null) => void;
+    setShowCelebration: (val: boolean) => void;
     resetRoom: () => void;
 
     drawerWord: string | null;
@@ -75,13 +78,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
     strokes: [],
     chat: [],
 
+    leaderboard: null as null | { playerId: string; name: string; score: number }[],
+    setLeaderboard: (lb) => set({ leaderboard: lb }),
+    clearLeaderboard: () => set({ leaderboard: null }),
+
     wordOptions: null,
 
     lastCorrectGuess: null,
     lastRoundEnd: null,
-    leaderboard: null,
 
     error: null,
+    showCelebration: false,
 
     setName: (name) => {
         localStorage.setItem(LS_NAME, name);
@@ -136,9 +143,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     addChat: (m) => set((st) => ({ chat: [...st.chat, m].slice(-200) })),
     clearChat: () => set({ chat: [] }),
 
-    setLeaderboard: (lb) => set({ leaderboard: lb }),
-
     setError: (msg) => set({ error: msg }),
+    setShowCelebration: (val) => set({ showCelebration: val }),
 
     resetRoom: () => {
         localStorage.removeItem(LS_ROOM);

@@ -115,6 +115,7 @@ export type ServerToClientEvents = {
 
     "room:error": (message: string) => void;
     "game:started": (payload: { roomCode: string }) => void;
+    "game:rematchStarted": () => void;
 };
 
 export type ClientToServerEvents = {
@@ -122,6 +123,7 @@ export type ClientToServerEvents = {
     "room:join": (payload: { roomCode: string; name: string; playerId: string }) => void;
     "reconnect:hello": (payload: { roomCode: string; playerId: string }) => void;
     "room:leave": (payload: { roomCode: string; playerId: string }) => void;
+    "game:rematch": ({roomCode, playerId, mode}: { roomCode: string, playerId: string, mode: string}) => void;
 
     "lobby:ready": (payload: { roomCode: string; playerId: string; isReady: boolean }) => void;
     "room:updateSettings": (payload: { roomCode: string; playerId: string; settings: any }) => void;

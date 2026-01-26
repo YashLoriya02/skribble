@@ -51,7 +51,7 @@ export default function LobbySettings() {
                     <CustomSelect
                         value={rounds}
                         onChange={(v) => update({maxRounds: v})}
-                        options={[3, 5, 7].map((v) => ({value: v, label: String(v)}))}
+                        options={[1, 3, 5, 7].map((v) => ({value: v, label: String(v)}))}
                     />
                 </div>
 

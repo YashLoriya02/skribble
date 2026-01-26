@@ -77,6 +77,7 @@ export type ServerToClientEvents = {
   "round:mask": (data: { roomCode: string; mask: string }) => void;
   "round:end": (data: { roomCode: string; word: string }) => void;
   "round:word": ({roomCode, word}: { roomCode: string; word: string }) => void
+  "game:rematchStarted": ({roomCode}: { roomCode: string}) => void
 
   "draw:stroke": (data: {
     roomCode: string;
@@ -90,7 +91,6 @@ export type ServerToClientEvents = {
 
   "draw:clear": (data: { roomCode: string }) => void;
 
-  // ✅ Step 6: richer sync
   "sync:state": (data: {
     roomCode: string;
     phase: string;
@@ -109,7 +109,6 @@ export type ServerToClientEvents = {
       createdAt: number;
     }>;
 
-    // only for drawer during selecting_word
     wordOptions?: string[];
   }) => void;
 
@@ -128,6 +127,7 @@ export type ClientToServerEvents = {
 
   "game:start": (payload: GameStartPayload) => void;
   "round:selectWord": (payload: RoundSelectWordPayload) => void;
+  "game:rematch": ({roomCode, playerId, mode}: { roomCode: string, playerId: string, mode: string}) => void
 
   "draw:stroke": (payload: DrawStrokePayload) => void;
   "draw:clear": (payload: DrawClearPayload) => void;

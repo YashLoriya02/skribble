@@ -12,9 +12,6 @@
 - `npm i`
 - `npm run dev`
 
-
 ### Remaining
-- Re-game Option
-- Canvas Optimization
 - Adding more words
-- Chat height fix in mobile (not necessary)
+- Player removal on tab close

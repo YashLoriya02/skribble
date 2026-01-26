@@ -22,7 +22,7 @@ export default function ChatPanel() {
     };
 
     return (
-        <div className="rounded-xl w-[55%] md:w-full h-[360px] md:h-[580px] border border-zinc-800 bg-zinc-950/40 p-3">
+        <div className="rounded-xl md:w-full h-[360px] h-full border border-zinc-800 bg-zinc-950/40 p-3">
             <div className="text-sm text-zinc-300 mb-2">Chat</div>
 
             <div className="h-full flex flex-col justify-between">
@@ -35,7 +35,7 @@ export default function ChatPanel() {
                             return (
                                 <div
                                     key={`${m.ts}_${idx}`}
-                                    className="rounded-md animate-in fade-in zoom-in duration-300 bg-green-500/15 border border-green-500/30 px-2 py-1.5 text-[10px] text-wrap md:text-sm text-green-300"
+                                    className="rounded-md animate-in fade-in zoom-in duration-300 bg-green-500/15 border px-1 border-green-500/30 py-1.5 text-[10px] text-wrap md:text-sm text-green-300"
                                 >
                                     ✅ {m.text}
                                 </div>
@@ -46,7 +46,7 @@ export default function ChatPanel() {
                             return (
                                 <div
                                     key={`${m.ts}_${idx}`}
-                                    className="rounded-md text-wrap animate-in fade-in zoom-in duration-300 px-2.5 text-[10px] md:text-sm text-emerald-300 font-medium"
+                                    className="rounded-md text-wrap animate-in fade-in zoom-in duration-300 text-[10px] md:text-sm text-emerald-300 font-medium"
                                 >
                                     🎯 {m.text}
                                 </div>
@@ -54,7 +54,7 @@ export default function ChatPanel() {
                         }
 
                         return (
-                            <div key={`${m.ts}_${idx}`} className="text-[10px] text-wrap px-3 md:text-sm">
+                            <div key={`${m.ts}_${idx}`} className="text-[10px] text-wrap pl-0.5 md:text-sm">
                                 <span className="text-zinc-400">{m.name}: </span>
                                 <span className="text-zinc-100">{m.text}</span>
                             </div>
@@ -71,13 +71,6 @@ export default function ChatPanel() {
                         placeholder="Type your guess…"
                         onKeyDown={(e) => e.key === "Enter" && send()}
                     />
-                    {/*<button*/}
-                    {/*    className="hidden md:block px-3 py-2 text-sm rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800"*/}
-                    {/*    onClick={send}*/}
-                    {/*    disabled={!text.trim()}*/}
-                    {/*>*/}
-                    {/*    Send*/}
-                    {/*</button>*/}
                 </div>
             </div>
         </div>
