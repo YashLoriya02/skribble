@@ -7,7 +7,7 @@ import { registerSocketHandlers } from "./socket/registerSocketHandlers";
 import type { ClientToServerEvents, ServerToClientEvents } from "./types/socket";
 
 const app = express();
-app.use(cors({ origin: ENV.CORS_ORIGIN === "*" ? true : ENV.CORS_ORIGIN, credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 
 app.get("/health", (_: any, res: any) => res.json({ status: "healthy", ok: true, env: ENV.NODE_ENV }));
