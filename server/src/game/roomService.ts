@@ -1,8 +1,8 @@
-import type {Player, RoomSettings, RoomState, RoundState, Stroke} from "../types/game";
-import {generateRoomCode} from "../utils/roomCode";
-import {deleteRoom, getRoom, roomStore, setRoom} from "./roomStore";
-import {pickRandomWords} from "./wordBank";
-import {GameGateway} from "../socket/gameGateway";
+import type { Player, RoomSettings, RoomState, RoundState, Stroke } from "../types/game";
+import { generateRoomCode } from "../utils/roomCode";
+import { deleteRoom, getRoom, roomStore, setRoom } from "./roomStore";
+import { pickRandomWords } from "./wordBank";
+import { GameGateway } from "../socket/gameGateway";
 
 const DEFAULT_SETTINGS: RoomSettings = {
     maxPlayers: 8,
@@ -166,7 +166,7 @@ function calcGuessPoints(params: {
     roundDurationSec: number;
     orderIndex: number;
 }) {
-    const {endsAt, now, roundDurationSec, orderIndex} = params;
+    const { endsAt, now, roundDurationSec, orderIndex } = params;
     const timeLeftMs = Math.max(0, endsAt - now);
     const timeLeftRatio = Math.min(1, timeLeftMs / (roundDurationSec * 1000));
     const base = 100;
@@ -178,7 +178,7 @@ function calcGuessPoints(params: {
 function leaderboard(room: RoomState) {
     return [...room.players]
         .sort((a, b) => b.score - a.score)
-        .map((p) => ({playerId: p.playerId, name: p.name, score: p.score}));
+        .map((p) => ({ playerId: p.playerId, name: p.name, score: p.score }));
 }
 
 export const RoomService = {
@@ -205,7 +205,7 @@ export const RoomService = {
             hostPlayerId: host.playerId,
             phase: "lobby",
             players: [host],
-            settings: {...DEFAULT_SETTINGS},
+            settings: { ...DEFAULT_SETTINGS },
             currentRound: 0,
             drawerOrder: [host.playerId],
             drawerIndex: 0,
@@ -213,7 +213,7 @@ export const RoomService = {
         };
 
         setRoom(roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     joinRoom(params: { roomCode: string; playerId: string; name: string; socketId: string }) {
@@ -232,7 +232,7 @@ export const RoomService = {
         }
 
         setRoom(room.roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     // ✅ Step 6: reconnect bind (no duplicate join needed)
@@ -247,7 +247,7 @@ export const RoomService = {
         setRoom(room.roomCode, room);
         GameGateway.roomState(room.roomCode, toPublicState(room));
 
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     setReady(params: { roomCode: string; playerId: string; isReady: boolean }) {
@@ -259,7 +259,7 @@ export const RoomService = {
         player.isReady = !!params.isReady;
 
         setRoom(room.roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     updateSettings(params: { roomCode: string; playerId: string; settings: Partial<RoomSettings> }) {
@@ -267,17 +267,40 @@ export const RoomService = {
         if (room.phase !== "lobby") throw new Error("Cannot change settings after game start");
         requireHost(room, params.playerId);
 
-        if (typeof params.settings.maxRounds === "number") room.settings.maxRounds = normalizeRounds(params.settings.maxRounds);
-        if (typeof params.settings.roundDurationSec === "number")
+        if (typeof params.settings.maxRounds === "number") {
+            room.settings.maxRounds = normalizeRounds(params.settings.maxRounds);
+        }
+        if (typeof params.settings.roundDurationSec === "number") {
             room.settings.roundDurationSec = normalizeDuration(params.settings.roundDurationSec);
+        }
         if (typeof params.settings.maxPlayers === "number") {
             const v = Math.max(2, Math.min(12, Math.floor(params.settings.maxPlayers)));
             if (v < room.players.length) throw new Error("maxPlayers cannot be less than current players");
             room.settings.maxPlayers = v;
         }
+        if (Array.isArray(params.settings.customWords)) {
+            room.settings.customWords = sanitizeCustomWords(params.settings.customWords);
+        }
+
+        function sanitizeCustomWords(words: string[]) {
+            const cleaned = words
+                .map((w) => String(w).trim().replace(/\s+/g, " "))
+                .filter((w) => w.length >= 2 && w.length <= 30)
+                .slice(0, 250);
+
+            const seen = new Set<string>();
+            const out: string[] = [];
+            for (const w of cleaned) {
+                const key = w.toLowerCase();
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push(w);
+            }
+            return out;
+        }
 
         setRoom(room.roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     startGame(params: { roomCode: string; playerId: string }) {
@@ -294,7 +317,7 @@ export const RoomService = {
         RoomService.beginWordSelection(room);
 
         setRoom(room.roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     beginWordSelection(room: RoomState) {
@@ -311,7 +334,7 @@ export const RoomService = {
         room.round.mask = "";
         room.round.endsAt = null;
 
-        room.round.wordOptions = pickRandomWords(3).map((w) => w.toLowerCase());
+        room.round.wordOptions = pickRandomWords(room).map((w) => w.toLowerCase());
         room.round.wordSelectEndsAt = Date.now() + WORD_SELECT_WINDOW_MS;
 
         setRoom(room.roomCode, room);
@@ -408,7 +431,7 @@ export const RoomService = {
             if (!latest?.round.word) return;
             if (latest.phase !== "drawing") return;
             try {
-                RoomService.endRound({roomCode: latest.roomCode, reason: "time"});
+                RoomService.endRound({ roomCode: latest.roomCode, reason: "time" });
             } catch {
             }
         }, durMs);
@@ -421,7 +444,7 @@ export const RoomService = {
             });
         }
 
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     // ✅ Step 6: end round schedules next round / game end
@@ -449,7 +472,7 @@ export const RoomService = {
             }
         }, ROUND_END_PAUSE_MS);
 
-        return {room, publicState: toPublicState(room), word: room.round.word};
+        return { room, publicState: toPublicState(room), word: room.round.word };
     },
 
     // ✅ Step 6: advance drawer/round or end game
@@ -533,7 +556,7 @@ export const RoomService = {
         }
 
         setRoom(room.roomCode, room);
-        GameGateway.drawStroke(room.roomCode, {roomCode: room.roomCode, ...stroke});
+        GameGateway.drawStroke(room.roomCode, { roomCode: room.roomCode, ...stroke });
         return stroke;
     },
 
@@ -572,7 +595,7 @@ export const RoomService = {
         };
 
         if (room.phase === "selecting_word" && player && room.round.drawerId === player.playerId) {
-            return {...base, wordOptions: room.round.wordOptions};
+            return { ...base, wordOptions: room.round.wordOptions };
         }
         return base;
     },
@@ -634,7 +657,7 @@ export const RoomService = {
 
         GameGateway.io().to(room.roomCode).emit("score:update", {
             roomCode: room.roomCode,
-            scores: room.players.map((p) => ({playerId: p.playerId, score: p.score})),
+            scores: room.players.map((p) => ({ playerId: p.playerId, score: p.score })),
         });
 
         GameGateway.roomState(room.roomCode, toPublicState(room));
@@ -646,7 +669,7 @@ export const RoomService = {
 
         if (allGuessed) {
             try {
-                RoomService.endRound({roomCode: room.roomCode, reason: "all_guessed"});
+                RoomService.endRound({ roomCode: room.roomCode, reason: "all_guessed" });
             } catch {
             }
         }
@@ -667,11 +690,11 @@ export const RoomService = {
         if (room.hostPlayerId === params.playerId) {
             const nextHost = [...room.players].sort((a, b) => a.joinedAt - b.joinedAt)[0];
             room.hostPlayerId = nextHost.playerId;
-            room.players = room.players.map((p) => ({...p, isHost: p.playerId === nextHost.playerId}));
+            room.players = room.players.map((p) => ({ ...p, isHost: p.playerId === nextHost.playerId }));
         }
 
         setRoom(room.roomCode, room);
-        return {room, publicState: toPublicState(room)};
+        return { room, publicState: toPublicState(room) };
     },
 
     undoLastStroke(params: { roomCode: string; playerId: string }) {
@@ -687,7 +710,7 @@ export const RoomService = {
         // simplest: clear + replay everything
         GameGateway.drawClear(room.roomCode);
         for (const s of room.round.strokes) {
-            GameGateway.drawStroke(room.roomCode, {roomCode: room.roomCode, ...s});
+            GameGateway.drawStroke(room.roomCode, { roomCode: room.roomCode, ...s });
         }
 
         return true;
@@ -732,7 +755,7 @@ export const RoomService = {
             setRoom(roomCode, room);
 
             GameGateway.roomState(roomCode, toPublicState(room));
-            return {roomCode, publicState: toPublicState(room)};
+            return { roomCode, publicState: toPublicState(room) };
         }
         return null;
     },

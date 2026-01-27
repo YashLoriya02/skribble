@@ -20,6 +20,7 @@ export type PublicState = {
         maxPlayers: number;
         maxRounds: number;
         roundDurationSec: number;
+        customWords: string[]
     };
     currentRound: number;
     drawerIndex: number;

@@ -9,7 +9,12 @@ export type LobbyReadyPayload = { roomCode: string; playerId: string; isReady: b
 export type UpdateSettingsPayload = {
   roomCode: string;
   playerId: string;
-  settings: Partial<{ maxRounds: number; roundDurationSec: number; maxPlayers: number }>;
+  settings: Partial<{
+    maxRounds: number;
+    customWords?: string[];
+    roundDurationSec: number;
+    maxPlayers: number
+  }>;
 };
 
 export type GameStartPayload = { roomCode: string; playerId: string };
@@ -76,8 +81,8 @@ export type ServerToClientEvents = {
   "round:start": (data: { roomCode: string; drawerId: string; mask: string; endsAt: number }) => void;
   "round:mask": (data: { roomCode: string; mask: string }) => void;
   "round:end": (data: { roomCode: string; word: string }) => void;
-  "round:word": ({roomCode, word}: { roomCode: string; word: string }) => void
-  "game:rematchStarted": ({roomCode}: { roomCode: string}) => void
+  "round:word": ({ roomCode, word }: { roomCode: string; word: string }) => void
+  "game:rematchStarted": ({ roomCode }: { roomCode: string }) => void
 
   "draw:stroke": (data: {
     roomCode: string;
@@ -127,7 +132,7 @@ export type ClientToServerEvents = {
 
   "game:start": (payload: GameStartPayload) => void;
   "round:selectWord": (payload: RoundSelectWordPayload) => void;
-  "game:rematch": ({roomCode, playerId, mode}: { roomCode: string, playerId: string, mode: string}) => void
+  "game:rematch": ({ roomCode, playerId, mode }: { roomCode: string, playerId: string, mode: string }) => void
 
   "draw:stroke": (payload: DrawStrokePayload) => void;
   "draw:clear": (payload: DrawClearPayload) => void;

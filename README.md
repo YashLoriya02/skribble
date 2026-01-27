@@ -15,3 +15,4 @@
 ### Remaining
 - Adding more words
 - Player removal on tab close
+- ChatPanel fix height in mobile 

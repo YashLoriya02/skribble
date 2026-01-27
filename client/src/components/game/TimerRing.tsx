@@ -58,7 +58,7 @@ export default function TimerRing({ size = 54, stroke = 6 }: Props) {
         if (!endsAt) return;
         if (phase !== "drawing") return;
 
-        if (secLeft <= 10 && secLeft >= 1) {
+        if (secLeft % 2 == 0 && secLeft <= 10 && secLeft >= 1) {
             if (lastTickSec !== secLeft) {
                 setLastTickSec(secLeft);
                 SFX.play("tick");

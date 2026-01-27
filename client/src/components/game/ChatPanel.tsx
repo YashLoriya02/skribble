@@ -22,7 +22,7 @@ export default function ChatPanel() {
     };
 
     return (
-        <div className="rounded-xl md:w-full h-[360px] h-full border border-zinc-800 bg-zinc-950/40 p-3">
+        <div className="rounded-xl md:w-full h-[350px] md:h-full border border-zinc-800 bg-zinc-950/40 p-3">
             <div className="text-sm text-zinc-300 mb-2">Chat</div>
 
             <div className="h-full flex flex-col justify-between">

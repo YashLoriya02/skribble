@@ -20,6 +20,7 @@ export type Player = {
 export type RoomSettings = {
     maxPlayers: number;
     maxRounds: number;
+    customWords?: string[];
     roundDurationSec: number;
 };
 
@@ -36,8 +37,8 @@ export type Stroke = {
 export type RoundState = {
     drawerId: string | null;
 
-    word: string | null; // server-only
-    wordOptions: string[]; // server-only (sent to drawer)
+    word: string | null;
+    wordOptions: string[];
     wordSelectEndsAt: number | null;
 
     mask: string;
@@ -52,7 +53,7 @@ export type RoundState = {
         hint1?: NodeJS.Timeout;
         hint2?: NodeJS.Timeout;
         roundEnd?: NodeJS.Timeout;
-        nextRound?: NodeJS.Timeout; // ✅ Step 6 auto-advance
+        nextRound?: NodeJS.Timeout;
     };
 };
 
@@ -66,7 +67,7 @@ export type RoomState = {
     players: Player[];
     settings: RoomSettings;
 
-    currentRound: number; // 0 before start
+    currentRound: number;
     drawerOrder: string[];
     drawerIndex: number;
 
