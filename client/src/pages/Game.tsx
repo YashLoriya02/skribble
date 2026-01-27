@@ -56,7 +56,7 @@ export default function Game() {
     const isLobby = phase === "lobby";
 
     return (
-        <div className="h-screen flex flex-col p-2 md:p-4 gap-2 overflow-hidden">
+        <div className="h-[100dvh] flex flex-col p-2 md:p-4 gap-2 overflow-hidden">
             <div className="flex items-center justify-between shrink-0">
                 <div className="text-sm flex items-center gap-4 text-zinc-400">
                     <div className="ml-2">
